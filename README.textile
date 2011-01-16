@@ -1,0 +1,22 @@
+h1. Overview
+
+ennui is a simple open source toolkit for handling user interactions that prompt the user to enter some information. It aims to reduce the time spent implementing repetetive interface components. It follows the delegate pattern to standardize view component behavior and allow easy integration into your code.
+
+h2. Classes
+
+* SingleLabelTextFieldViewController
+* DoubleLabelTextFieldViewController
+
+h1. License
+
+This code is published as free open source software. Feel free to fork and contribute.
+
+h1. Usage
+
+I recommend using ennui as a git submodule. You can easily point your submodule to this repo or your fork.
+
+Once you have ennui in your project's directory, add it to your project, selecting only the 'ennui/ennui' directory. This should create a group called ennui in your project, like the one shown in the example project.
+ 
+h1. Example
+
+Included in this repository is a .xcodeproj file. Open that in Xcode and run it to see a few examples of how to use ennui. The example shows the same components used as modal and non-modal views.
