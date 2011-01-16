@@ -9,9 +9,10 @@ h2. Classes
 
 h2. Init
 
-@SingleLabelTextFieldViewController* tSingle = [[[SingleLabelTextFieldViewController alloc] initWithTitle:\@"Title" label:\@"Label" caption:\@"caption" text:\@"edit me"] autorelease];@
-%tSingle.delegate = self;%
-%[self.navigationController pushViewController:tSingle animated:YES];%
+bq.
+SingleLabelTextFieldViewController* tSingle = [[[SingleLabelTextFieldViewController alloc] initWithTitle:@"Title" label:@"Label" caption:@"caption" text:@"edit me"] autorelease];
+tSingle.delegate = self;
+[self.navigationController pushViewController:tSingle animated:YES];
 
 h1. License
 
