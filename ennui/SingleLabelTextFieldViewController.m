@@ -7,11 +7,14 @@
 //
 
 #import "SingleLabelTextFieldViewController.h"
+#import "FlurryAPI.h"
 
+
+static int ddLogLevel = LOG_LEVEL_ERROR;
 
 @implementation SingleLabelTextFieldViewController
 
-@synthesize label, caption, textField, delegate;
+@synthesize label, caption, textField, cancelBlock, doneBlock;
 
 -(id)initWithTitle:(NSString*)aTitle label:(NSString*)aLabel caption:(NSString*)aCaption text:(NSString*)aText
 {
@@ -24,12 +27,18 @@
 	return self;
 }
 
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation 
+{
+	return YES;
+}
+
 - (void)viewDidLoad
 {
 	[super viewDidLoad];
 	
 	self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed)] autorelease];
 	self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(donePressed)] autorelease];
+	[FlurryAPI logEvent:@"SingleLabelText"];
 	
 	label.text = _label;
 	caption.text = _caption;
@@ -42,9 +51,24 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+	[super viewWillAppear:animated];
+	
+	DDLogVerbose(@"SingleLabelTextField.viewWillAppear");
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
 	[super viewDidAppear:animated];
 	
 	[textField becomeFirstResponder];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+	[super viewWillDisappear:animated];
+	
+	DDLogVerbose(@"SingleLabelTextField.viewWillDisappear");
+	[textField resignFirstResponder];
 }
 
 - (void)viewDidUnload {
@@ -54,14 +78,16 @@
 
 - (void)cancelPressed
 {
+	[FlurryAPI logEvent:@"SingleLabelTextCancel"];
 	[textField resignFirstResponder];
-	[delegate singleLabelTextFieldDidCancel:self];
+	cancelBlock();
 }
 
 - (void)donePressed
 {
+	[FlurryAPI logEvent:@"SingleLabelTextDone"];
 	[textField resignFirstResponder];
-	[delegate singleLabelTextField:self didCompleteWithText:textField.text];
+	doneBlock(textField.text);
 }
 
 #pragma mark -
