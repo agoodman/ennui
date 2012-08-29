@@ -7,7 +7,8 @@
  *
  */
 
-#import "CaptionLabelCell.h"
-#import "CaptionTextCell.h"
-#import "SingleLabelTextFieldViewController.h"
-#import "DoubleLabelTextFieldViewController.h"
+#import "AutocompleteDataSource.h"
+#import "CurrencyInputViewController.h"
+#import "EditorViewController.h"
+#import "OptionsViewController.h"
+#import "TextInputViewController.h"
