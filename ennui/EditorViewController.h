@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import "AutocompleteDataSource.h"
+#import "PhotoDataSource.h"
+#import "PhotoDelegate.h"
 
 
 typedef void(^EditorBlock)(NSDictionary*);
 
-@interface EditorViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@interface EditorViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UIImagePickerControllerDelegate>
 
 @property (strong) IBOutlet UITableView* tableView;
 @property (strong) NSDictionary* config;
@@ -21,5 +23,7 @@ typedef void(^EditorBlock)(NSDictionary*);
 @property (copy) dispatch_block_t cancelBlock;
 @property (copy) EditorBlock saveBlock;
 @property (strong) id<AutocompleteDataSource> autocompleteDataSource;
+@property (strong) id<PhotoDataSource> photoDataSource;
+@property (strong) id<PhotoDelegate> photoDelegate;
 
 @end

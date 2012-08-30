@@ -10,9 +10,11 @@
 #import "OptionsViewController.h"
 #import "TextInputViewController.h"
 #import "CurrencyInputViewController.h"
+#import "PhotoInputCell.h"
 
 
 @interface EditorViewController ()
+@property (strong) NSString* activeKeyPath;
 -(NSDictionary*)constructConditionsForKeyPath:(NSString*)aKeyPath;
 @end
 
@@ -26,6 +28,8 @@
 @synthesize cancelBlock = _cancelBlock;
 @synthesize saveBlock = _saveBlock;
 @synthesize autocompleteDataSource = _autocompleteDataSource;
+@synthesize photoDelegate = _photoDelegate;
+@synthesize activeKeyPath = _activeKeyPath;
 
 - (void)cancelPressed
 {
@@ -54,7 +58,9 @@
             if( [tKeyConditions containsObject:key] ) {
                 NSString* tField = [self.autocompleteDataSource fieldForKeyPath:key];
                 NSString* tValue = [self.fields valueForKey:key];
-                [tConditions setValue:tValue forKey:tField];
+                if( tField && tValue ) {
+                    [tConditions setValue:tValue forKey:tField];
+                }
             }
         }
     }
@@ -103,6 +109,19 @@
     return self.keys.count;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString* tKeyPath = [self.keys objectAtIndex:indexPath.row];
+    NSDictionary* tConfig = [self.config objectForKey:tKeyPath];
+    NSString* tType = [tConfig objectForKey:@"type"];
+    
+    if( [@"photo" isEqualToString:tType] ) {
+        return 80.0;
+    }else{
+        return 44.0;
+    }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString* tKeyPath = [self.keys objectAtIndex:indexPath.row];
@@ -110,10 +129,12 @@
     NSString* tTag = [tConfig objectForKey:@"tag"];
     NSNumber* tRequired = [tConfig objectForKey:@"required"];
     NSString* tType = [tConfig objectForKey:@"type"];
-    NSString* tValue = [self.fields objectForKey:tKeyPath];
+    id tValue = [self.fields objectForKey:tKeyPath];
     NSString* tCellType = [tConfig objectForKey:@"cell"];
     
-//    if( [@"enum" isEqualToString:tType] || [@"currency" isEqualToString:tType] || [@"text" isEqualToString:tType] ) {
+    if( [[NSNull null] isEqual:tValue] ) tValue = nil;
+    
+    if( [@"enum" isEqualToString:tType] || [@"currency" isEqualToString:tType] || [@"text" isEqualToString:tType] ) {
         static NSString *CellIdentifier = @"Type1Cell";
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
@@ -122,12 +143,35 @@
         }
         
         cell.textLabel.text = tTag;
-        cell.detailTextLabel.text = tValue;
+        if( tValue!=nil ) {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",tValue];
+        }
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
         return cell;
 
-//    }else{
+    }else if( [@"photo" isEqualToString:tType] ) {
+        static NSString* sPhotoCell = @"PhotoCell";
+        PhotoInputCell* tCell = [tableView dequeueReusableCellWithIdentifier:sPhotoCell];
+        
+        if( tCell==nil ) {
+            tCell = (PhotoInputCell*)[[[NSBundle mainBundle] loadNibNamed:@"PhotoCell" owner:self options:nil] objectAtIndex:0];
+        }
+        
+        [self.photoDataSource loadImageNamed:tValue
+                                successBlock:^(UIImage* aImage, BOOL aRefresh) {
+                                    async_main(^{
+                                        tCell.photoView.image = aImage;
+                                    });
+                                }
+                                failureBlock:^(BOOL aRefresh) {
+                                    async_main(^{
+                                        tCell.photoView.image = [UIImage imageNamed:@"dealcell-nophoto.png"];
+                                    });
+                                }];
+        
+        return tCell;
+        
 //        static NSString *CellIdentifier = @"SubtitleCell";
 //        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
 //        
@@ -141,7 +185,9 @@
 //        
 //        return cell;
         
-//    }
+    }
+    
+    return [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"] autorelease];
 }
 
 /*
@@ -251,8 +297,46 @@
         };
         [self.navigationController pushViewController:tCurrency animated:YES];
         
+    }else if( [@"photo" isEqualToString:tType] ) {
+        self.activeKeyPath = tKeyPath;
+        if( [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] ) {
+            UIImagePickerController* tPicker = [[[UIImagePickerController alloc] init] autorelease];
+            tPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            tPicker.delegate = self;
+            [self.navigationController presentModalViewController:tPicker animated:YES];
+        }else if( [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary] ) {
+            UIImagePickerController* tPicker = [[[UIImagePickerController alloc] init] autorelease];
+            tPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+            tPicker.delegate = self;
+            [self.navigationController presentModalViewController:tPicker animated:YES];
+        }else{
+            Alert(@"No Photo Source", @"Your device does not have a camera");
+        }
+        
     }
     
+}
+
+#pragma mark - UIImagePickerControllerDelegate
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    UIImage* tImage = [info objectForKey:UIImagePickerControllerOriginalImage];
+    if( tImage==nil ) {
+        NSString* tPath = [info objectForKey:UIImagePickerControllerMediaURL];
+        [self.photoDelegate didSelectImageAtPath:tPath forKeyPath:self.activeKeyPath];
+    }else{
+        [self.photoDelegate didSelectImage:tImage forKeyPath:self.activeKeyPath];
+    }
+    self.activeKeyPath = nil;
+    
+    [picker dismissModalViewControllerAnimated:YES];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    self.activeKeyPath = nil;
+    [picker dismissModalViewControllerAnimated:YES];
 }
 
 @end
