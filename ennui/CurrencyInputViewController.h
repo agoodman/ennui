@@ -10,7 +10,7 @@
 
 typedef void(^CurrencyInputBlock)(NSString*,NSString*);
 
-@interface CurrencyInputViewController : UIViewController <UITextInputDelegate>
+@interface CurrencyInputViewController : UIViewController
 
 @property (strong) IBOutlet UITextField* textInput;
 @property (strong) IBOutlet UILabel* textDisplay;

@@ -127,10 +127,10 @@
     NSString* tKeyPath = [self.keys objectAtIndex:indexPath.row];
     NSDictionary* tConfig = [self.config objectForKey:tKeyPath];
     NSString* tTag = [tConfig objectForKey:@"tag"];
-    NSNumber* tRequired = [tConfig objectForKey:@"required"];
+//    NSNumber* tRequired = [tConfig objectForKey:@"required"];
     NSString* tType = [tConfig objectForKey:@"type"];
     id tValue = [self.fields objectForKey:tKeyPath];
-    NSString* tCellType = [tConfig objectForKey:@"cell"];
+//    NSString* tCellType = [tConfig objectForKey:@"cell"];
     
     if( [[NSNull null] isEqual:tValue] ) tValue = nil;
     
@@ -139,7 +139,7 @@
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
         
         if( cell==nil ) {
-            cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier] autorelease];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:CellIdentifier];
         }
         
         cell.textLabel.text = tTag;
@@ -187,7 +187,7 @@
         
     }
     
-    return [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"] autorelease];
+    return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"Cell"];
 }
 
 /*
@@ -240,7 +240,7 @@
     NSString* tValue = [self.fields objectForKey:tKeyPath];
 
     if( [tType isEqualToString:@"enum"] ) {
-        OptionsViewController* tOptions = [[[OptionsViewController alloc] initWithNibName:@"OptionsView" bundle:[NSBundle mainBundle]] autorelease];
+        OptionsViewController* tOptions = [[OptionsViewController alloc] initWithNibName:@"OptionsView" bundle:[NSBundle mainBundle]];
         tOptions.keyPath = tKeyPath;
         tOptions.selectedValue = tValue;
         tOptions.options = [tConfig objectForKey:@"options"];
@@ -256,7 +256,7 @@
         [self.navigationController pushViewController:tOptions animated:YES];
         
     }else if( [tType isEqualToString:@"text"] ) {
-        TextInputViewController* tText = [[[TextInputViewController alloc] initWithNibName:@"TextInputView" bundle:[NSBundle mainBundle]] autorelease];
+        TextInputViewController* tText = [[TextInputViewController alloc] initWithNibName:@"TextInputView" bundle:[NSBundle mainBundle]];
         tText.keyPath = tKeyPath;
         tText.value = tValue;
         tText.title = [tConfig objectForKey:@"tag"];
@@ -278,7 +278,7 @@
         [self.navigationController pushViewController:tText animated:YES];
         
     }else if( [tType isEqualToString:@"currency"] ) {
-        CurrencyInputViewController* tCurrency = [[[CurrencyInputViewController alloc] initWithNibName:@"CurrencyInputView" bundle:[NSBundle mainBundle]] autorelease];
+        CurrencyInputViewController* tCurrency = [[CurrencyInputViewController alloc] initWithNibName:@"CurrencyInputView" bundle:[NSBundle mainBundle]];
         tCurrency.keyPath = tKeyPath;
         tCurrency.value = tValue;
         tCurrency.title = [tConfig objectForKey:@"tag"];
@@ -300,12 +300,12 @@
     }else if( [@"photo" isEqualToString:tType] ) {
         self.activeKeyPath = tKeyPath;
         if( [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] ) {
-            UIImagePickerController* tPicker = [[[UIImagePickerController alloc] init] autorelease];
+            UIImagePickerController* tPicker = [[UIImagePickerController alloc] init];
             tPicker.sourceType = UIImagePickerControllerSourceTypeCamera;
             tPicker.delegate = self;
             [self.navigationController presentModalViewController:tPicker animated:YES];
         }else if( [UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary] ) {
-            UIImagePickerController* tPicker = [[[UIImagePickerController alloc] init] autorelease];
+            UIImagePickerController* tPicker = [[UIImagePickerController alloc] init];
             tPicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
             tPicker.delegate = self;
             [self.navigationController presentModalViewController:tPicker animated:YES];

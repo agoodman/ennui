@@ -14,7 +14,7 @@
 
 typedef void(^EditorBlock)(NSDictionary*);
 
-@interface EditorViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UIImagePickerControllerDelegate>
+@interface EditorViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UIImagePickerControllerDelegate,UINavigationControllerDelegate>
 
 @property (strong) IBOutlet UITableView* tableView;
 @property (strong) NSDictionary* config;

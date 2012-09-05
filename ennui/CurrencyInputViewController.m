@@ -35,16 +35,31 @@
     }
 }
 
+- (void)textDidChange
+{
+    NSNumberFormatter* tIn = [NSNumberFormatter new];
+    tIn.numberStyle = NSNumberFormatterDecimalStyle;
+    
+    NSNumberFormatter* tOut = [NSNumberFormatter new];
+    tOut.numberStyle = NSNumberFormatterCurrencyStyle;
+    
+    double tPennies = [tIn numberFromString:self.textInput.text].doubleValue;
+    double tDollars = tPennies / 100.00;
+    
+    self.textDisplay.text = [tOut stringFromNumber:[NSNumber numberWithDouble:tDollars]];
+    self.value = [tIn stringFromNumber:[NSNumber numberWithDouble:tDollars]];
+}
+
 #pragma mark - View life cycle
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    [self.textInput addTarget:self action:@selector(textDidChange:) forControlEvents:UIControlEventEditingChanged];
+    [self.textInput addTarget:self action:@selector(textDidChange) forControlEvents:UIControlEventEditingChanged];
 
-    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed)] autorelease];
-    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(savePressed)] autorelease];
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(savePressed)];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -64,28 +79,6 @@
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
-}
-
-#pragma mark - UITextInputDelegate
-
-- (void)textWillChange:(id<UITextInput>)textInput
-{
-    
-}
-
-- (void)textDidChange:(id<UITextInput>)textInput
-{
-    NSNumberFormatter* tIn = [[NSNumberFormatter new] autorelease];
-    tIn.numberStyle = NSNumberFormatterDecimalStyle;
-    
-    NSNumberFormatter* tOut = [[NSNumberFormatter new] autorelease];
-    tOut.numberStyle = NSNumberFormatterCurrencyStyle;
-    
-    double tPennies = [tIn numberFromString:self.textInput.text].doubleValue;
-    double tDollars = tPennies / 100.00;
-    
-    self.textDisplay.text = [tOut stringFromNumber:[NSNumber numberWithDouble:tDollars]];
-    self.value = [tIn stringFromNumber:[NSNumber numberWithDouble:tDollars]];
 }
 
 @end
