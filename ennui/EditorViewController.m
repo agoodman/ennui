@@ -289,7 +289,9 @@
         };
         tCurrency.saveBlock = ^(NSString* aKeyPath, NSString* aValue) {
             NSMutableDictionary* tFields = [NSMutableDictionary dictionaryWithDictionary:self.fields];
-            [tFields setValue:aValue forKey:aKeyPath];
+            NSNumberFormatter* tFormat = [NSNumberFormatter new];
+            tFormat.numberStyle = NSNumberFormatterDecimalStyle;
+            [tFields setValue:[tFormat numberFromString:aValue] forKey:aKeyPath];
             self.fields = tFields;
             async_main(^{
                 [self.navigationController popViewControllerAnimated:YES];
