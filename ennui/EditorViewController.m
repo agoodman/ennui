@@ -40,8 +40,13 @@
 
 - (void)savePressed
 {
-    if( self.saveBlock!=nil ) {
-        self.saveBlock(self.fields);
+    NSArray* tInvalidFields = [self validateFields];
+    if( tInvalidFields.count==0 ) {
+        if( self.saveBlock!=nil ) {
+            self.saveBlock(self.fields);
+        }
+    }else{
+        Alert(@"Missing Required Fields", [tInvalidFields componentsJoinedByString:@", "]);
     }
 }
 
@@ -67,6 +72,21 @@
     NSLog(@"resulting conditions: %@",tConditions);
 
     return [NSDictionary dictionaryWithDictionary:tConditions];
+}
+
+- (NSArray*)validateFields
+{
+    NSMutableArray* tInvalidFields = [NSMutableArray array];
+    for (NSString* key in self.keys) {
+        NSDictionary* tConfig = [self.config valueForKey:key];
+        NSNumber* tReq = [tConfig valueForKey:@"required"];
+        if( tReq.intValue>0 ) {
+            if( [self.fields valueForKey:key]==nil ) {
+                [tInvalidFields addObject:[tConfig valueForKey:@"tag"]];
+            }
+        }
+    }
+    return tInvalidFields;
 }
 
 #pragma mark - View life cycle
@@ -144,7 +164,13 @@
         
         cell.textLabel.text = tTag;
         if( tValue!=nil ) {
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",tValue];
+            if( [@"currency" isEqualToString:tType] ) {
+                NSNumberFormatter* tFormat = [NSNumberFormatter new];
+                tFormat.numberStyle = NSNumberFormatterCurrencyStyle;
+                cell.detailTextLabel.text = [tFormat stringFromNumber:tValue];
+            }else{
+                cell.detailTextLabel.text = [NSString stringWithFormat:@"%@",tValue];
+            }
         }
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         
@@ -237,9 +263,9 @@
 
     NSDictionary* tConfig = [self.config objectForKey:tKeyPath];
     NSString* tType = [tConfig objectForKey:@"type"];
-    NSString* tValue = [self.fields objectForKey:tKeyPath];
 
     if( [tType isEqualToString:@"enum"] ) {
+        NSString* tValue = [self.fields objectForKey:tKeyPath];
         OptionsViewController* tOptions = [[OptionsViewController alloc] initWithNibName:@"OptionsView" bundle:[NSBundle mainBundle]];
         tOptions.keyPath = tKeyPath;
         tOptions.selectedValue = tValue;
@@ -256,6 +282,7 @@
         [self.navigationController pushViewController:tOptions animated:YES];
         
     }else if( [tType isEqualToString:@"text"] ) {
+        NSString* tValue = [self.fields objectForKey:tKeyPath];
         TextInputViewController* tText = [[TextInputViewController alloc] initWithNibName:@"TextInputView" bundle:[NSBundle mainBundle]];
         tText.keyPath = tKeyPath;
         tText.value = tValue;
@@ -278,6 +305,7 @@
         [self.navigationController pushViewController:tText animated:YES];
         
     }else if( [tType isEqualToString:@"currency"] ) {
+        NSNumber* tValue = [self.fields objectForKey:tKeyPath];
         CurrencyInputViewController* tCurrency = [[CurrencyInputViewController alloc] initWithNibName:@"CurrencyInputView" bundle:[NSBundle mainBundle]];
         tCurrency.keyPath = tKeyPath;
         tCurrency.value = tValue;
@@ -287,11 +315,9 @@
                 [self.navigationController popViewControllerAnimated:YES];
             });
         };
-        tCurrency.saveBlock = ^(NSString* aKeyPath, NSString* aValue) {
+        tCurrency.saveBlock = ^(NSString* aKeyPath, NSNumber* aValue) {
             NSMutableDictionary* tFields = [NSMutableDictionary dictionaryWithDictionary:self.fields];
-            NSNumberFormatter* tFormat = [NSNumberFormatter new];
-            tFormat.numberStyle = NSNumberFormatterDecimalStyle;
-            [tFields setValue:[tFormat numberFromString:aValue] forKey:aKeyPath];
+            [tFields setValue:aValue forKey:aKeyPath];
             self.fields = tFields;
             async_main(^{
                 [self.navigationController popViewControllerAnimated:YES];

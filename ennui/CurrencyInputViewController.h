@@ -8,14 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
-typedef void(^CurrencyInputBlock)(NSString*,NSString*);
+typedef void(^CurrencyInputBlock)(NSString*,NSNumber*);
 
 @interface CurrencyInputViewController : UIViewController
 
 @property (strong) IBOutlet UITextField* textInput;
 @property (strong) IBOutlet UILabel* textDisplay;
 @property (strong) NSString* keyPath;
-@property (strong) NSString* value;
+@property (strong) NSNumber* value;
 @property (copy) dispatch_block_t cancelBlock;
 @property (copy) CurrencyInputBlock saveBlock;
 

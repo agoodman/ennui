@@ -47,7 +47,7 @@
     double tDollars = tPennies / 100.00;
     
     self.textDisplay.text = [tOut stringFromNumber:[NSNumber numberWithDouble:tDollars]];
-    self.value = [tIn stringFromNumber:[NSNumber numberWithDouble:tDollars]];
+    self.value = [NSNumber numberWithDouble:tDollars];
 }
 
 #pragma mark - View life cycle
@@ -66,7 +66,12 @@
 {
     [super viewWillAppear:animated];
     
-    self.textInput.text = self.value;
+    self.textInput.text = [NSString stringWithFormat:@"%d",(int)([self.value floatValue]*100.0)];
+    
+    NSNumberFormatter* tFormat = [NSNumberFormatter new];
+    tFormat.numberStyle = NSNumberFormatterCurrencyStyle;
+    self.textDisplay.text = [tFormat stringFromNumber:self.value];
+    
     [self.textInput becomeFirstResponder];
 }
 

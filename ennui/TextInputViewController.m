@@ -124,7 +124,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString* tOption = [self.autocompleteResults objectAtIndex:indexPath.row];
-    self.textInput.text = tOption;
+    if( self.saveBlock!=nil ) {
+        self.saveBlock(self.keyPath, tOption);
+    }
 }
 
 #pragma mark - UITextInputDelegate
