@@ -22,7 +22,7 @@ tEditorView.config = @{
 };
 tEditorView.fields = @{ @"name" : @"Billy Jean" }; // pre-populate fields if desired
 tEditorView.cancelBlock = ^{ [self.navigationController popViewControllerAnimated:YES]; };
-tEditorView.doneBlock = ^(NSDictionary* aFields) { // do something with new values };
+tEditorView.saveBlock = ^(NSDictionary* aFields) { // do something with new values };
 [self.navigationController pushViewController:tEditorView animated:YES];
 </pre>
 
