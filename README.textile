@@ -1,19 +1,36 @@
 h1. Overview
 
-ennui is a simple open source toolkit for handling user interactions that prompt the user to enter some information. It aims to reduce the time spent implementing repetetive interface components. It follows the delegate pattern to standardize view component behavior and allow easy integration into your code.
+ennui is a simple open source toolkit for handling user interactions that prompt the user to enter some information. It aims to reduce the time spent implementing repetetive interface components. It follows the delegate/block pattern to standardize view component behavior and allow easy integration into your code.
 
 h2. Classes
 
-* SingleLabelTextFieldViewController
-* DoubleLabelTextFieldViewController
+* EditorViewController
+* TextInputViewController
+* EnumInputViewController
+* PhotoInputViewController
+* CurrencyInputViewController
 
-h2. Init
+h2. Editor
 
 <pre>
-SingleLabelTextFieldViewController* tSingle = [[[SingleLabelTextFieldViewController alloc] initWithTitle:@"Title" label:@"Label" caption:@"caption" text:@"edit me"] autorelease];
-tSingle.delegate = self;
-[self.navigationController pushViewController:tSingle animated:YES];
+EditorViewController* tEditorView = [EditorViewController new];
+tEditorView.keys = @[ @"name", @"address", @"phone" ];
+tEditorView.config = @{ 
+  @"name" : @{ @"required" : @1, @"tag" : @"Name", @"type" : @"text" },
+  @"address" : @{ @"required" : @0, @"tag" : @"Street Address", @"type" : @"text" },
+  @"phone" : @{ @"required" : @0, @"tag" : @"Phone Number", @"type" : @"text" }
+};
+tEditorView.fields = @{ @"name" : @"Billy Jean" }; // pre-populate fields if desired
+tEditorView.cancelBlock = ^{ [self.navigationController popViewControllerAnimated:YES]; };
+tEditorView.doneBlock = ^(NSDictionary* aFields) { // do something with new values };
+[self.navigationController pushViewController:tEditorView animated:YES];
 </pre>
+
+This results in an editor with three fields (name, address, and phone). The editor will validate presence of the name field. Tapping a field in the editor will display the data input form for the type defined in the config hash.
+
+h2. Autocomplete for Text Input
+
+By assigning an autocomplete data source and delegate to the editor, text fields will show autocomplete results based on the content provided by the data source.
 
 h1. License
 
