@@ -32,6 +32,16 @@ h2. Autocomplete for Text Input
 
 By assigning an autocomplete data source and delegate to the editor, text fields will show autocomplete results based on the content provided by the data source.
 
+h2. Enumerated Values
+
+<pre>
+tEditor.config = @{
+  @"color" : @{ @"required" : @1, @"tag" : @"Name", @"type" : @"enum", @"values" : @[ @"cyan", @"magenta", @"yellow", @"black" ] }
+};
+</pre>
+
+Using the enum type, the field editor will prompt the user to select one of the provided options.
+
 h1. License
 
 This code is published as free open source software. Feel free to fork and contribute.
