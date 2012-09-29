@@ -15,7 +15,7 @@
 
 @implementation TextInputViewController
 
-@synthesize textInput = _textInput;
+@synthesize searchBar = _searchBar;
 @synthesize tableView = _tableView;
 @synthesize keyPath = _keyPath;
 @synthesize value = _value;
@@ -35,7 +35,7 @@
 - (void)savePressed
 {
     if( self.saveBlock!=nil ) {
-        self.saveBlock(self.keyPath, self.textInput.text);
+        self.saveBlock(self.keyPath, self.searchBar.text);
     }
 }
 
@@ -51,7 +51,7 @@
     };
     [self.autocompleteDataSource optionsForObject:tObject
                                             field:tField
-                                       startsWith:self.textInput.text
+                                       startsWith:self.searchBar.text
                                        conditions:self.autocompleteConditions
                                          callback:tCallback];
 }
@@ -62,7 +62,7 @@
 {
     [super viewDidLoad];
     
-    [self.textInput addTarget:self action:@selector(textDidChange) forControlEvents:UIControlEventEditingChanged];
+//    [self.textInput addTarget:self action:@selector(textDidChange) forControlEvents:UIControlEventEditingChanged];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelPressed)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(savePressed)];
@@ -72,8 +72,8 @@
 {
     [super viewWillAppear:animated];
     
-    self.textInput.text = self.value;
-    [self.textInput becomeFirstResponder];
+    self.searchBar.text = self.value;
+    [self.searchBar becomeFirstResponder];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -129,9 +129,9 @@
     }
 }
 
-#pragma mark - UITextInputDelegate
+#pragma mark - UISearchBarDelegate
 
-- (void)textDidChange
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
     [self refreshAutocomplete];
 }

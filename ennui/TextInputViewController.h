@@ -12,9 +12,9 @@
 
 typedef void(^TextInputBlock)(NSString*,NSString*);
 
-@interface TextInputViewController : UIViewController <UITableViewDataSource,UITableViewDelegate>
+@interface TextInputViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UISearchBarDelegate>
 
-@property (strong) IBOutlet UITextField* textInput;
+@property (strong) IBOutlet UISearchBar* searchBar;
 @property (strong) IBOutlet UITableView* tableView;
 @property (strong) NSString* keyPath;
 @property (strong) NSString* value;
